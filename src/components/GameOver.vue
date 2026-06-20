@@ -1,10 +1,10 @@
 <template>
   <div class="game-over-overlay">
     <div class="game-over-content">
-      <div class="skull-icon">{{ rankIcon }}</div>
+      <div class="rank-icon">{{ rankIcon }}</div>
       <h2 class="game-over-title" :class="rankClass">{{ rankTitle }}</h2>
       <p class="game-over-reason">{{ reason }}</p>
-      
+
       <div class="rank-badge" :class="rankClass">
         <span class="rank-label">生存评级</span>
         <span class="rank-value">{{ rankName }}</span>
@@ -23,16 +23,18 @@
       <div class="goals-summary">
         <h4>🎯 目标完成情况 ({{ completedGoalsCount }}/{{ totalGoalsCount }})</h4>
         <div class="goals-list">
-          <div 
-            v-for="goal in allGoals" 
-            :key="goal.id" 
+          <div
+            v-for="goal in flatGoals"
+            :key="goal.id"
             class="goal-summary-item"
-            :class="{ done: goal.completed, failed: !goal.completed && goal.past }"
+            :class="{ done: goal.completed, failed: !goal.completed && goal.isPast }"
           >
-            <span class="goal-icon">{{ goal.completed ? '✅' : (goal.past ? '❌' : '⏳') }}</span>
+            <span class="goal-icon">{{ goal.completed ? '✅' : (goal.isPast ? '❌' : '⏳') }}</span>
             <div class="goal-text">
-              <span class="goal-name">{{ goal.name }}</span>
-              <span class="goal-reward" v-if="goal.completed">+{{ goal.reward }}</span>
+              <div class="goal-name-row">
+                <span class="goal-name">{{ goal.name }}</span>
+                <span class="goal-reward" v-if="goal.completed">+{{ goal.reward }}</span>
+              </div>
               <span class="goal-desc">{{ goal.description }}</span>
             </div>
           </div>
@@ -58,11 +60,11 @@
         </div>
         <div class="stat-item">
           <span class="stat-label">狩猎成功</span>
-          <span class="stat-value">{{ huntSuccess }} 次</span>
+          <span class="stat-value">{{ huntSuccessCount }} 次</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">暴风雪</span>
-          <span class="stat-value">{{ blizzards }} 次</span>
+          <span class="stat-value">{{ blizzardCount }} 次</span>
         </div>
       </div>
       <div class="game-over-actions">
@@ -81,74 +83,49 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  reason: {
-    type: String,
-    default: ''
-  },
-  dayCount: {
-    type: Number,
-    default: 1
-  },
-  temperature: {
-    type: Number,
-    default: 0
-  },
-  wood: {
-    type: Number,
-    default: 0
-  },
-  tools: {
-    type: Number,
-    default: 0
-  },
-  totalScore: {
-    type: Number,
-    default: 0
-  },
-  completedGoalsCount: {
-    type: Number,
-    default: 0
-  },
-  totalGoalsCount: {
-    type: Number,
-    default: 12
-  },
-  allPhases: {
-    type: Array,
-    default: () => []
-  },
-  stats: {
-    type: Object,
-    default: () => ({})
-  }
+  reason: { type: String, default: '' },
+  dayCount: { type: Number, default: 1 },
+  temperature: { type: Number, default: 0 },
+  wood: { type: Number, default: 0 },
+  tools: { type: Number, default: 0 },
+  totalScore: { type: Number, default: 0 },
+  completedGoalsCount: { type: Number, default: 0 },
+  totalGoalsCount: { type: Number, default: 12 },
+  allPhases: { type: Array, default: () => [] },
+  stats: { type: Object, default: () => ({}) }
 })
 
 defineEmits(['restart', 'load'])
 
-const allGoals = computed(() => {
-  const goals = []
+const flatGoals = computed(() => {
+  const list = []
   props.allPhases.forEach(phase => {
+    if (!phase.goals) return
     phase.goals.forEach(g => {
-      goals.push({
-        ...g,
-        past: phase.isPast || phase.isActive
+      list.push({
+        id: g.id,
+        name: g.name,
+        description: g.description,
+        completed: !!g.completed,
+        reward: g.reward || 0,
+        isPast: !!phase.isPast || !!phase.isActive
       })
     })
   })
-  return goals
+  return list
 })
 
-const huntSuccess = computed(() => props.stats.huntSuccess || 0)
-const blizzards = computed(() => props.stats.blizzardsEncountered || 0)
+const huntSuccessCount = computed(() => props.stats?.huntSuccess || 0)
+const blizzardCount = computed(() => props.stats?.blizzardsEncountered || 0)
 
 const goalReward = computed(() => {
   let reward = 0
-  allGoals.value.forEach(g => { if (g.completed) reward += g.reward })
+  flatGoals.value.forEach(g => { if (g.completed) reward += g.reward })
   return reward
 })
 
 const resourceBonus = computed(() => {
-  return props.tools * 3 + props.wood + (props.allPhases[0] ? 0 : 0)
+  return props.tools * 3 + props.wood
 })
 
 const completionRate = computed(() => {
@@ -156,41 +133,21 @@ const completionRate = computed(() => {
   return props.completedGoalsCount / props.totalGoalsCount
 })
 
-const rankName = computed(() => {
-  if (props.dayCount >= 10 && completionRate.value >= 0.8) return 'S - 荒野之王'
-  if (props.dayCount >= 7 && completionRate.value >= 0.6) return 'A - 生存专家'
-  if (props.dayCount >= 5 && completionRate.value >= 0.4) return 'B - 老练探险家'
-  if (props.dayCount >= 3 && completionRate.value >= 0.2) return 'C - 初级生存者'
-  if (props.dayCount >= 2) return 'D - 菜鸟探险者'
-  return 'F - 雪原亡魂'
-})
+function getRank() {
+  const d = props.dayCount
+  const r = completionRate.value
+  if (d >= 10 && r >= 0.8) return { name: 'S - 荒野之王', title: '传奇结局', icon: '👑', cls: 'rank-s' }
+  if (d >= 7 && r >= 0.6) return { name: 'A - 生存专家', title: '辉煌结局', icon: '🏆', cls: 'rank-a' }
+  if (d >= 5 && r >= 0.4) return { name: 'B - 老练探险家', title: '荣耀结局', icon: '🎖️', cls: 'rank-b' }
+  if (d >= 3 && r >= 0.2) return { name: 'C - 初级生存者', title: '普通结局', icon: '⭐', cls: 'rank-c' }
+  if (d >= 2) return { name: 'D - 菜鸟探险者', title: '遗憾结局', icon: '💫', cls: 'rank-d' }
+  return { name: 'F - 雪原亡魂', title: '悲惨结局', icon: '💀', cls: 'rank-f' }
+}
 
-const rankTitle = computed(() => {
-  if (props.dayCount >= 10 && completionRate.value >= 0.8) return '传奇结局'
-  if (props.dayCount >= 7 && completionRate.value >= 0.6) return '辉煌结局'
-  if (props.dayCount >= 5 && completionRate.value >= 0.4) return '荣耀结局'
-  if (props.dayCount >= 3 && completionRate.value >= 0.2) return '普通结局'
-  if (props.dayCount >= 2) return '遗憾结局'
-  return '悲惨结局'
-})
-
-const rankIcon = computed(() => {
-  if (props.dayCount >= 10 && completionRate.value >= 0.8) return '👑'
-  if (props.dayCount >= 7 && completionRate.value >= 0.6) return '🏆'
-  if (props.dayCount >= 5 && completionRate.value >= 0.4) return '🎖️'
-  if (props.dayCount >= 3 && completionRate.value >= 0.2) return '⭐'
-  if (props.dayCount >= 2) return '💫'
-  return '💀'
-})
-
-const rankClass = computed(() => {
-  if (props.dayCount >= 10 && completionRate.value >= 0.8) return 'rank-s'
-  if (props.dayCount >= 7 && completionRate.value >= 0.6) return 'rank-a'
-  if (props.dayCount >= 5 && completionRate.value >= 0.4) return 'rank-b'
-  if (props.dayCount >= 3 && completionRate.value >= 0.2) return 'rank-c'
-  if (props.dayCount >= 2) return 'rank-d'
-  return 'rank-f'
-})
+const rankName = computed(() => getRank().name)
+const rankTitle = computed(() => getRank().title)
+const rankIcon = computed(() => getRank().icon)
+const rankClass = computed(() => getRank().cls)
 </script>
 
 <style scoped>
@@ -230,17 +187,11 @@ const rankClass = computed(() => {
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.skull-icon {
+.rank-icon {
   font-size: 80px;
   margin-bottom: 20px;
   animation: pulse 2s infinite;
@@ -277,30 +228,12 @@ const rankClass = computed(() => {
   margin-bottom: 20px;
   border: 2px solid;
 }
-.rank-badge.rank-s {
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.3));
-  border-color: #ffd700;
-}
-.rank-badge.rank-a {
-  background: linear-gradient(135deg, rgba(231, 76, 60, 0.3), rgba(192, 57, 43, 0.3));
-  border-color: #e74c3c;
-}
-.rank-badge.rank-b {
-  background: linear-gradient(135deg, rgba(52, 152, 219, 0.3), rgba(41, 128, 185, 0.3));
-  border-color: #3498db;
-}
-.rank-badge.rank-c {
-  background: linear-gradient(135deg, rgba(46, 204, 113, 0.3), rgba(39, 174, 96, 0.3));
-  border-color: #2ecc71;
-}
-.rank-badge.rank-d {
-  background: linear-gradient(135deg, rgba(155, 89, 182, 0.3), rgba(142, 68, 173, 0.3));
-  border-color: #9b59b6;
-}
-.rank-badge.rank-f {
-  background: linear-gradient(135deg, rgba(127, 140, 141, 0.3), rgba(149, 165, 166, 0.3));
-  border-color: #7f8c8d;
-}
+.rank-badge.rank-s { background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,165,0,0.3)); border-color: #ffd700; }
+.rank-badge.rank-a { background: linear-gradient(135deg, rgba(231,76,60,0.3), rgba(192,57,43,0.3)); border-color: #e74c3c; }
+.rank-badge.rank-b { background: linear-gradient(135deg, rgba(52,152,219,0.3), rgba(41,128,185,0.3)); border-color: #3498db; }
+.rank-badge.rank-c { background: linear-gradient(135deg, rgba(46,204,113,0.3), rgba(39,174,96,0.3)); border-color: #2ecc71; }
+.rank-badge.rank-d { background: linear-gradient(135deg, rgba(155,89,182,0.3), rgba(142,68,173,0.3)); border-color: #9b59b6; }
+.rank-badge.rank-f { background: linear-gradient(135deg, rgba(127,140,141,0.3), rgba(149,165,166,0.3)); border-color: #7f8c8d; }
 
 .rank-label {
   display: block;
@@ -370,17 +303,9 @@ const rankClass = computed(() => {
   padding-right: 5px;
 }
 
-.goals-list::-webkit-scrollbar {
-  width: 4px;
-}
-.goals-list::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 2px;
-}
-.goals-list::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 2px;
-}
+.goals-list::-webkit-scrollbar { width: 4px; }
+.goals-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 2px; }
+.goals-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 2px; }
 
 .goal-summary-item {
   display: flex;
@@ -403,29 +328,32 @@ const rankClass = computed(() => {
   opacity: 0.8;
 }
 
-.goal-icon {
-  flex-shrink: 0;
-  font-size: 14px;
-}
+.goal-icon { flex-shrink: 0; font-size: 14px; }
 
 .goal-text {
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
+}
+
+.goal-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }
 
 .goal-name {
   color: white;
   font-weight: 500;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .goal-reward {
   color: #ffd700;
   font-size: 11px;
   font-weight: bold;
+  flex-shrink: 0;
 }
 
 .goal-desc {
@@ -495,14 +423,8 @@ const rankClass = computed(() => {
 }
 
 @media (max-width: 500px) {
-  .game-over-content {
-    padding: 25px 20px;
-  }
-  .final-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .score-value {
-    font-size: 36px;
-  }
+  .game-over-content { padding: 25px 20px; }
+  .final-stats { grid-template-columns: repeat(2, 1fr); }
+  .score-value { font-size: 36px; }
 }
 </style>

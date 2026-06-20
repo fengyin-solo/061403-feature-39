@@ -7,34 +7,9 @@ const PHASE_GOALS = [
     dayRange: [1, 2],
     description: '熟悉环境，建立基本生存条件',
     goals: [
-      {
-        id: 'chop10',
-        name: '砍柴达人',
-        description: '累计砍柴获得 20 木头',
-        type: 'cumulative',
-        metric: 'woodGained',
-        target: 20,
-        reward: 10
-      },
-      {
-        id: 'fire2',
-        name: '点燃希望',
-        description: '生火 2 次',
-        type: 'cumulative',
-        metric: 'fireMade',
-        target: 2,
-        reward: 10
-      },
-      {
-        id: 'survive2',
-        name: '寒夜求生',
-        description: '存活到第 2 天结束',
-        type: 'threshold',
-        metric: 'dayCount',
-        target: 2,
-        checkTime: 'night',
-        reward: 15
-      }
+      { id: 'chop10', name: '砍柴达人', description: '累计砍柴获得 20 木头', type: 'cumulative', metric: 'woodGained', target: 20, reward: 10 },
+      { id: 'fire2', name: '点燃希望', description: '生火 2 次', type: 'cumulative', metric: 'fireMade', target: 2, reward: 10 },
+      { id: 'survive2', name: '寒夜求生', description: '存活到第 2 天结束', type: 'threshold', metric: 'dayCount', target: 2, checkTime: 'night', reward: 15 }
     ]
   },
   {
@@ -43,34 +18,9 @@ const PHASE_GOALS = [
     dayRange: [3, 4],
     description: '制作工具，开拓食物来源',
     goals: [
-      {
-        id: 'tools2',
-        name: '能工巧匠',
-        description: '制作 2 把工具',
-        type: 'cumulative',
-        metric: 'toolsMade',
-        target: 2,
-        reward: 15
-      },
-      {
-        id: 'hunt3',
-        name: '猎手本色',
-        description: '狩猎成功 3 次',
-        type: 'cumulative',
-        metric: 'huntSuccess',
-        target: 3,
-        reward: 15
-      },
-      {
-        id: 'food10',
-        name: '未雨绸缪',
-        description: '食物储备达到 10',
-        type: 'threshold',
-        metric: 'food',
-        target: 10,
-        checkTime: 'any',
-        reward: 10
-      }
+      { id: 'tools2', name: '能工巧匠', description: '制作 2 把工具', type: 'cumulative', metric: 'toolsMade', target: 2, reward: 15 },
+      { id: 'hunt3', name: '猎手本色', description: '狩猎成功 3 次', type: 'cumulative', metric: 'huntSuccess', target: 3, reward: 15 },
+      { id: 'food10', name: '未雨绸缪', description: '食物储备达到 10', type: 'threshold', metric: 'food', target: 10, checkTime: 'any', reward: 10 }
     ]
   },
   {
@@ -79,35 +29,9 @@ const PHASE_GOALS = [
     dayRange: [5, 7],
     description: '强化储备，应对恶劣天气',
     goals: [
-      {
-        id: 'wood50',
-        name: '薪火相传',
-        description: '累计砍柴获得 50 木头',
-        type: 'cumulative',
-        metric: 'woodGained',
-        target: 50,
-        reward: 20
-      },
-      {
-        id: 'hide5',
-        name: '织裘御寒',
-        description: '拥有 5 张兽皮',
-        type: 'threshold',
-        metric: 'hide',
-        target: 5,
-        checkTime: 'any',
-        reward: 15
-      },
-      {
-        id: 'noBlizzard',
-        name: '风调雨顺',
-        description: '本阶段不遭遇暴风雪',
-        type: 'flag',
-        metric: 'phaseBlizzard',
-        target: false,
-        checkTime: 'phaseEnd',
-        reward: 25
-      }
+      { id: 'wood50', name: '薪火相传', description: '累计砍柴获得 50 木头', type: 'cumulative', metric: 'woodGained', target: 50, reward: 20 },
+      { id: 'hide5', name: '织裘御寒', description: '拥有 5 张兽皮', type: 'threshold', metric: 'hide', target: 5, checkTime: 'any', reward: 15 },
+      { id: 'noBlizzard', name: '风调雨顺', description: '本阶段不遭遇暴风雪', type: 'flag', metric: 'phaseBlizzard', target: false, checkTime: 'phaseEnd', reward: 25 }
     ]
   },
   {
@@ -116,34 +40,9 @@ const PHASE_GOALS = [
     dayRange: [8, Infinity],
     description: '长期生存，征服雪原',
     goals: [
-      {
-        id: 'survive10',
-        name: '十日传奇',
-        description: '存活到第 10 天',
-        type: 'threshold',
-        metric: 'dayCount',
-        target: 10,
-        checkTime: 'day',
-        reward: 30
-      },
-      {
-        id: 'tools5',
-        name: '兵工厂',
-        description: '累计制作 5 把工具',
-        type: 'cumulative',
-        metric: 'toolsMade',
-        target: 5,
-        reward: 20
-      },
-      {
-        id: 'hunt10',
-        name: '狩猎大师',
-        description: '累计狩猎成功 10 次',
-        type: 'cumulative',
-        metric: 'huntSuccess',
-        target: 10,
-        reward: 25
-      }
+      { id: 'survive10', name: '十日传奇', description: '存活到第 10 天', type: 'threshold', metric: 'dayCount', target: 10, checkTime: 'day', reward: 30 },
+      { id: 'tools5', name: '兵工厂', description: '累计制作 5 把工具', type: 'cumulative', metric: 'toolsMade', target: 5, reward: 20 },
+      { id: 'hunt10', name: '狩猎大师', description: '累计狩猎成功 10 次', type: 'cumulative', metric: 'huntSuccess', target: 10, reward: 25 }
     ]
   }
 ]
@@ -174,9 +73,32 @@ export function useGame() {
   })
 
   const goalProgress = reactive({})
-  const completedGoals = ref(new Set())
+  const completedGoalsList = reactive([])
   const phaseBlizzardFlags = reactive({})
   let currentPhaseId = null
+
+  const completedGoalsSet = {
+    has(id) {
+      return completedGoalsList.includes(id)
+    },
+    add(id) {
+      if (!completedGoalsList.includes(id)) {
+        completedGoalsList.push(id)
+      }
+    },
+    get size() {
+      return completedGoalsList.length
+    },
+    toArray() {
+      return [...completedGoalsList]
+    },
+    clear() {
+      completedGoalsList.splice(0, completedGoalsList.length)
+    },
+    replaceFrom(arr) {
+      completedGoalsList.splice(0, completedGoalsList.length, ...arr)
+    }
+  }
 
   const initGoals = () => {
     PHASE_GOALS.forEach(phase => {
@@ -203,7 +125,7 @@ export function useGame() {
     return phase.goals.map(goal => ({
       ...goal,
       current: getGoalProgress(goal),
-      completed: completedGoals.value.has(goal.id),
+      completed: completedGoalsSet.has(goal.id),
       percentage: getGoalPercentage(goal)
     }))
   })
@@ -217,18 +139,18 @@ export function useGame() {
       goals: phase.goals.map(goal => ({
         ...goal,
         current: getGoalProgress(goal),
-        completed: completedGoals.value.has(goal.id),
+        completed: completedGoalsSet.has(goal.id),
         percentage: getGoalPercentage(goal)
       })),
       totalReward: phase.goals.reduce((s, g) => s + g.reward, 0),
-      earnedReward: phase.goals.reduce((s, g) => s + (completedGoals.value.has(g.id) ? g.reward : 0), 0),
-      completedCount: phase.goals.filter(g => completedGoals.value.has(g.id)).length
+      earnedReward: phase.goals.reduce((s, g) => s + (completedGoalsSet.has(g.id) ? g.reward : 0), 0),
+      completedCount: phase.goals.filter(g => completedGoalsSet.has(g.id)).length
     }))
   })
 
   const totalScore = computed(() => {
     let score = dayCount.value * 5
-    completedGoals.value.forEach(id => {
+    completedGoalsList.forEach(id => {
       const phase = PHASE_GOALS.find(p => p.goals.some(g => g.id === id))
       if (phase) {
         const goal = phase.goals.find(g => g.id === id)
@@ -242,7 +164,7 @@ export function useGame() {
     return score
   })
 
-  const completedGoalsCount = computed(() => completedGoals.value.size)
+  const completedGoalsCount = computed(() => completedGoalsSet.size)
   const totalGoalsCount = computed(() => PHASE_GOALS.reduce((s, p) => s + p.goals.length, 0))
 
   function getGoalProgress(goal) {
@@ -292,15 +214,15 @@ export function useGame() {
     if (!phase) return
 
     phase.goals.forEach(goal => {
-      if (completedGoals.value.has(goal.id)) return
+      if (completedGoalsSet.has(goal.id)) return
       if (goal.checkTime && goal.checkTime !== 'any' && goal.checkTime !== checkTime) return
       if (goal.type === 'flag') return
 
       const current = getGoalProgress(goal)
-      const isDone = goal.type === 'threshold' ? current >= goal.target : current >= goal.target
+      const isDone = current >= goal.target
 
       if (isDone) {
-        completedGoals.value.add(goal.id)
+        completedGoalsSet.add(goal.id)
         addLog(`🎯 目标达成：${goal.name}！奖励 +${goal.reward} 分`, 'goal')
       }
     })
@@ -311,13 +233,13 @@ export function useGame() {
     if (!phase) return
 
     phase.goals.forEach(goal => {
-      if (completedGoals.value.has(goal.id)) return
+      if (completedGoalsSet.has(goal.id)) return
       if (goal.checkTime !== 'phaseEnd' && goal.type !== 'flag') return
 
       if (goal.type === 'flag') {
         const current = getGoalProgress(goal)
         if (current === goal.target) {
-          completedGoals.value.add(goal.id)
+          completedGoalsSet.add(goal.id)
           addLog(`🎯 目标达成：${goal.name}！奖励 +${goal.reward} 分`, 'goal')
         } else {
           addLog(`❌ 目标失败：${goal.name}`, 'warning')
@@ -367,10 +289,10 @@ export function useGame() {
 
   function consumeHeat() {
     if (gameOver.value) return
-    
+
     const multiplier = isBlizzard.value ? 2 : 1
     const consumption = HEAT_CONSUMPTION_RATE * multiplier
-    
+
     if (heat.value >= consumption) {
       heat.value -= consumption
       if (temperature.value < 80) {
@@ -381,7 +303,7 @@ export function useGame() {
       temperature.value = Math.max(0, temperature.value - consumption)
       addLog('热量不足！体温正在下降...', 'warning')
     }
-    
+
     checkGameOver()
   }
 
@@ -392,7 +314,7 @@ export function useGame() {
     nightConsumptionTimer = setInterval(() => {
       consumeHeat()
     }, 1000)
-    
+
     if (Math.random() < BLIZZARD_CHANCE) {
       triggerBlizzard()
     }
@@ -431,33 +353,33 @@ export function useGame() {
 
   function chopWood() {
     if (gameOver.value || isNight.value) return
-    
+
     const multiplier = isBlizzard.value ? 2 : 1
     const tempCost = 5 * multiplier
-    
+
     temperature.value = Math.max(0, temperature.value - tempCost)
     const woodGained = Math.floor(Math.random() * 3) + 2
     wood.value += woodGained
     stats.woodGained += woodGained
-    
+
     addLog(`砍柴：获得 ${woodGained} 木头，消耗 ${tempCost} 体温`, 'action')
     checkGoals('any')
-    
+
     if (Math.random() < BLIZZARD_CHANCE * 0.5) {
       triggerBlizzard()
     }
-    
+
     checkGameOver()
   }
 
   function hunt() {
     if (gameOver.value || isNight.value) return
-    
+
     const multiplier = isBlizzard.value ? 2 : 1
     const tempCost = 8 * multiplier
-    
+
     temperature.value = Math.max(0, temperature.value - tempCost)
-    
+
     if (Math.random() < huntSuccessRate.value) {
       const foodGained = Math.floor(Math.random() * 3) + 2
       const hideGained = Math.floor(Math.random() * 2) + 1
@@ -470,11 +392,11 @@ export function useGame() {
       addLog(`狩猎失败：消耗 ${tempCost} 体温，空手而归`, 'warning')
     }
     checkGoals('any')
-    
+
     if (Math.random() < BLIZZARD_CHANCE * 0.5) {
       triggerBlizzard()
     }
-    
+
     checkGameOver()
   }
 
@@ -484,16 +406,16 @@ export function useGame() {
       addLog('材料不足：需要 2 木头和 1 兽皮', 'warning')
       return
     }
-    
+
     const multiplier = isBlizzard.value ? 2 : 1
     const tempCost = 6 * multiplier
-    
+
     wood.value -= 2
     hide.value -= 1
     tools.value += 1
     stats.toolsMade++
     temperature.value = Math.max(0, temperature.value - tempCost)
-    
+
     addLog(`制作工具：获得 1 工具，消耗 ${tempCost} 体温`, 'success')
     checkGoals('any')
     checkGameOver()
@@ -504,13 +426,13 @@ export function useGame() {
       addLog('木头不足：生火需要 3 木头', 'warning')
       return
     }
-    
+
     wood.value -= 3
     const heatGained = Math.floor(Math.random() * 20) + 25
     heat.value = Math.min(100, heat.value + heatGained)
     temperature.value = Math.min(100, temperature.value + 10)
     stats.fireMade++
-    
+
     addLog(`生火：获得 ${heatGained} 热量，体温上升 10`, 'success')
     checkGoals('any')
   }
@@ -520,12 +442,12 @@ export function useGame() {
       addLog('没有食物了！', 'warning')
       return
     }
-    
+
     food.value -= 1
     const tempGained = Math.floor(Math.random() * 10) + 5
     temperature.value = Math.min(100, temperature.value + tempGained)
     stats.foodEaten++
-    
+
     addLog(`进食：体温恢复 ${tempGained}`, 'success')
   }
 
@@ -533,7 +455,7 @@ export function useGame() {
     dayNightTimer = setInterval(() => {
       toggleDayNight()
     }, isDay.value ? DAY_DURATION : NIGHT_DURATION)
-    
+
     autoSaveTimer = setInterval(() => {
       saveGame('auto')
     }, 10000)
@@ -566,7 +488,7 @@ export function useGame() {
       dayCount: dayCount.value,
       isBlizzard: isBlizzard.value,
       stats: { ...stats },
-      completedGoals: Array.from(completedGoals.value),
+      completedGoals: completedGoalsSet.toArray(),
       goalProgress: { ...goalProgress },
       phaseBlizzardFlags: { ...phaseBlizzardFlags },
       currentPhaseId,
@@ -582,7 +504,7 @@ export function useGame() {
       addLog('没有找到存档', 'warning')
       return false
     }
-    
+
     try {
       const gameState = JSON.parse(saved)
       temperature.value = gameState.temperature
@@ -594,12 +516,12 @@ export function useGame() {
       isDay.value = gameState.isDay
       dayCount.value = gameState.dayCount
       isBlizzard.value = gameState.isBlizzard
-      
+
       if (gameState.stats) {
         Object.assign(stats, gameState.stats)
       }
       if (gameState.completedGoals) {
-        completedGoals.value = new Set(gameState.completedGoals)
+        completedGoalsSet.replaceFrom(gameState.completedGoals)
       }
       if (gameState.goalProgress) {
         Object.assign(goalProgress, gameState.goalProgress)
@@ -610,18 +532,18 @@ export function useGame() {
       if (gameState.currentPhaseId) {
         currentPhaseId = gameState.currentPhaseId
       }
-      
+
       gameOver.value = false
       gameOverReason.value = ''
       actionLog.value = []
-      
+
       stopTimers()
       startTimers()
-      
+
       if (!isDay.value) {
         startNightCycle()
       }
-      
+
       addLog(`成功加载存档：${slot === 'auto' ? '自动存档' : slot}`, 'success')
       return true
     } catch (e) {
@@ -667,7 +589,7 @@ export function useGame() {
     gameOver.value = false
     gameOverReason.value = ''
     actionLog.value = []
-    
+
     Object.assign(stats, {
       woodGained: 0,
       fireMade: 0,
@@ -678,16 +600,16 @@ export function useGame() {
       nightsSurvived: 0,
       blizzardsEncountered: 0
     })
-    
-    completedGoals.value = new Set()
+
+    completedGoalsSet.clear()
     Object.keys(goalProgress).forEach(k => delete goalProgress[k])
     Object.keys(phaseBlizzardFlags).forEach(k => delete phaseBlizzardFlags[k])
     currentPhaseId = null
-    
+
     initGoals()
     stopTimers()
     startTimers()
-    
+
     addLog('新游戏开始！祝你好运！', 'success')
   }
 

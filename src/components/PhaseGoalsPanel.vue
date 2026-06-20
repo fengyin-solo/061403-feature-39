@@ -1,12 +1,12 @@
 <template>
-  <div class="phase-goals-panel" :class="{ expanded: isExpanded }">
+  <div class="phase-goals-panel">
     <div class="panel-header" @click="toggleExpand">
       <div class="header-left">
         <span class="phase-icon">🎯</span>
         <div class="phase-info">
-          <span class="phase-name">{{ currentPhase?.name || '未知阶段' }}</span>
+          <span class="phase-name">{{ safePhaseName }}</span>
           <span class="phase-days" v-if="currentPhase">
-            第 {{ currentPhase.dayRange[0] }}-{{ currentPhase.dayRange[1] === Infinity ? '∞' : currentPhase.dayRange[1] }} 天
+            第 {{ currentPhase.dayRange[0] }}-{{ displayDayEnd }} 天
           </span>
         </div>
       </div>
@@ -26,71 +26,71 @@
       {{ currentPhase.description }}
     </div>
 
-    <transition name="slide">
-      <div class="goals-container" v-show="isExpanded">
-        <div class="phases-tabs">
-          <div 
-            v-for="phase in allPhases" 
-            :key="phase.id"
-            class="phase-tab"
-            :class="{ 
-              active: phase.isActive, 
-              past: phase.isPast,
-              future: phase.isFuture,
-              complete: phase.completedCount === phase.goals.length
-            }"
-          >
-            <span class="tab-name">{{ phase.name.split('').slice(0, 2).join('') }}</span>
-            <span class="tab-progress">{{ phase.completedCount }}/{{ phase.goals.length }}</span>
+    <div class="goals-container" v-show="isExpanded">
+      <div class="phases-tabs">
+        <div
+          v-for="phase in allPhases"
+          :key="phase.id"
+          class="phase-tab"
+          :class="{
+            active: phase.isActive,
+            past: phase.isPast,
+            future: phase.isFuture,
+            complete: phase.completedCount === phase.goals.length
+          }"
+        >
+          <span class="tab-name">{{ shortPhaseName(phase.name) }}</span>
+          <span class="tab-progress">{{ phase.completedCount }}/{{ phase.goals.length }}</span>
+        </div>
+      </div>
+
+      <div
+        v-for="goal in phaseGoals"
+        :key="goal.id"
+        class="goal-card"
+        :class="{ done: goal.completed }"
+      >
+        <div class="goal-header">
+          <div class="goal-status">
+            <span class="status-icon">{{ goal.completed ? '✅' : '⭕' }}</span>
+            <span class="goal-title">{{ goal.name }}</span>
           </div>
+          <span class="goal-reward-badge" :class="{ earned: goal.completed }">
+            +{{ goal.reward }}
+          </span>
         </div>
 
-        <div 
-          v-for="goal in phaseGoals" 
-          :key="goal.id" 
-          class="goal-card"
-          :class="{ done: goal.completed, active: !goal.completed }"
-        >
-          <div class="goal-header">
-            <div class="goal-status">
-              <span class="status-icon">{{ goal.completed ? '✅' : '⭕' }}</span>
-              <span class="goal-title">{{ goal.name }}</span>
-            </div>
-            <span class="goal-reward-badge" :class="{ earned: goal.completed }">
-              +{{ goal.reward }}
-            </span>
-          </div>
-          
-          <div class="goal-desc">{{ goal.description }}</div>
-          
+        <div class="goal-desc">{{ goal.description }}</div>
+
+        <div class="goal-progress-wrap">
           <div class="goal-progress-bar">
-            <div 
-              class="progress-fill" 
+            <div
+              class="progress-fill"
               :style="{ width: goal.percentage + '%' }"
               :class="{ done: goal.completed }"
             ></div>
           </div>
-          
+
           <div class="goal-progress-text">
-            <span>{{ formatCurrent(goal) }}</span>
+            <span>{{ formatProgress(goal) }}</span>
             <span>{{ goal.percentage }}%</span>
           </div>
         </div>
+      </div>
 
-        <div class="panel-footer" v-if="phaseGoals.length > 0">
-          <div class="phase-stats">
-            <div class="stat-mini">
-              <span>阶段奖励</span>
-              <span class="golden">{{ activePhase?.earnedReward || 0 }}/{{ activePhase?.totalReward || 0 }}</span>
-            </div>
-            <div class="stat-mini">
-              <span>已完成</span>
-              <span class="golden">{{ activePhase?.completedCount || 0 }}/{{ activePhase?.goals.length || 0 }}</span>
-            </div>
+      <div class="panel-footer" v-if="phaseGoals.length > 0">
+        <div class="phase-stats">
+          <div class="stat-mini">
+            <span>阶段奖励</span>
+            <span class="golden">{{ activeEarned }}/{{ activeTotal }}</span>
+          </div>
+          <div class="stat-mini">
+            <span>已完成</span>
+            <span class="golden">{{ activeCompleted }}/{{ activeGoalCount }}</span>
           </div>
         </div>
       </div>
-    </transition>
+    </div>
   </div>
 </template>
 
@@ -126,13 +126,29 @@ const props = defineProps({
 
 const isExpanded = ref(true)
 
+const safePhaseName = computed(() => props.currentPhase?.name || '准备中')
+const displayDayEnd = computed(() => {
+  if (!props.currentPhase) return '?'
+  return props.currentPhase.dayRange[1] === Infinity ? '∞' : props.currentPhase.dayRange[1]
+})
+
 const activePhase = computed(() => props.allPhases.find(p => p.isActive))
+const activeEarned = computed(() => activePhase.value?.earnedReward || 0)
+const activeTotal = computed(() => activePhase.value?.totalReward || 0)
+const activeCompleted = computed(() => activePhase.value?.completedCount || 0)
+const activeGoalCount = computed(() => activePhase.value?.goals?.length || 0)
 
 function toggleExpand() {
   isExpanded.value = !isExpanded.value
 }
 
-function formatCurrent(goal) {
+function shortPhaseName(name) {
+  if (!name) return ''
+  return name.slice(0, 2)
+}
+
+function formatProgress(goal) {
+  if (!goal) return '0/0'
   if (goal.type === 'flag') {
     return goal.completed ? '达成' : '进行中'
   }
@@ -141,7 +157,7 @@ function formatCurrent(goal) {
   if (typeof current === 'boolean') {
     return current ? '达成' : '未达成'
   }
-  return `${current}/${target}`
+  return current + '/' + target
 }
 </script>
 
@@ -236,7 +252,6 @@ function formatCurrent(goal) {
 .expand-icon {
   color: rgba(255, 255, 255, 0.6);
   font-size: 10px;
-  transition: transform 0.3s;
 }
 
 .phase-description {
@@ -335,15 +350,6 @@ function formatCurrent(goal) {
   border-color: rgba(46, 204, 113, 0.4);
 }
 
-.goal-card.active {
-  animation: gentlePulse 3s ease-in-out infinite;
-}
-
-@keyframes gentlePulse {
-  0%, 100% { box-shadow: 0 0 0 rgba(255, 215, 0, 0); }
-  50% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.1); }
-}
-
 .goal-header {
   display: flex;
   justify-content: space-between;
@@ -392,16 +398,16 @@ function formatCurrent(goal) {
   padding-left: 22px;
 }
 
+.goal-progress-wrap {
+  padding-left: 22px;
+}
+
 .goal-progress-bar {
   height: 8px;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 5px;
-  padding-left: 22px;
-  box-sizing: border-box;
-  padding: 0;
-  margin-left: 22px;
 }
 
 .progress-fill {
@@ -418,7 +424,6 @@ function formatCurrent(goal) {
 .goal-progress-text {
   display: flex;
   justify-content: space-between;
-  padding: 0 22px;
   font-size: 10px;
   color: rgba(255, 255, 255, 0.5);
 }
@@ -451,26 +456,6 @@ function formatCurrent(goal) {
   color: #ffd700;
   font-size: 14px;
   font-weight: bold;
-}
-
-.slide-enter-active,
-.slide-leave-active {
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.slide-enter-from,
-.slide-leave-to {
-  opacity: 0;
-  max-height: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.slide-enter-to,
-.slide-leave-from {
-  opacity: 1;
-  max-height: 800px;
 }
 
 @media (max-width: 600px) {

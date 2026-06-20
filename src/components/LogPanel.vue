@@ -4,12 +4,12 @@
       日志
       <span class="log-count">共 {{ logs.length }} 条</span>
     </h3>
-    <div class="log-list" ref="logListRef">
-      <div 
-        v-for="(log, index) in logs" 
-        :key="index" 
-        class="log-item" 
-        :class="[log.type, { highlight: log.isHighlight }"
+    <div class="log-list">
+      <div
+        v-for="(log, index) in logs"
+        :key="index"
+        class="log-item"
+        :class="[log.type, { highlight: log.isHighlight }]"
       >
         <span class="log-pin" v-if="log.isHighlight">⭐</span>
         <span class="log-time">[{{ log.timestamp }}]</span>
@@ -20,7 +20,7 @@
       </div>
     </div>
   </div>
-  </template>
+</template>
 
 <script setup>
 defineProps({
@@ -94,6 +94,7 @@ defineProps({
   display: flex;
   align-items: flex-start;
   gap: 6px;
+  word-break: break-word;
 }
 
 @keyframes fadeIn {
@@ -108,10 +109,8 @@ defineProps({
 }
 
 .log-item.highlight {
-  border-width: 3px;
-  font-weight: 500;
+  font-weight: 600;
   animation: highlightPulse 0.6s ease;
-  position: relative;
 }
 
 @keyframes highlightPulse {
@@ -132,7 +131,6 @@ defineProps({
 }
 .log-item.info.highlight {
   background: rgba(52, 152, 219, 0.45);
-  border-left: 3px solid #5dade2;
   box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
 }
 
@@ -143,7 +141,6 @@ defineProps({
 }
 .log-item.success.highlight {
   background: rgba(46, 204, 113, 0.45);
-  border-left: 3px solid #58d68d;
   box-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
 }
 
@@ -154,7 +151,6 @@ defineProps({
 }
 .log-item.warning.highlight {
   background: rgba(243, 156, 18, 0.45);
-  border-left: 3px solid #f5b041;
   box-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
 }
 
@@ -165,7 +161,6 @@ defineProps({
 }
 .log-item.danger.highlight {
   background: rgba(231, 76, 60, 0.5);
-  border-left: 3px solid #ec7063;
   box-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
   animation: dangerPulse 1s ease-in-out infinite alternate;
 }
@@ -203,10 +198,13 @@ defineProps({
 
 .log-time {
   color: rgba(255, 255, 255, 0.5);
-  margin-right: 4px;
   font-size: 10px;
   flex-shrink: 0;
   white-space: nowrap;
+}
+
+.log-message {
+  flex: 1;
 }
 
 .empty-log {
