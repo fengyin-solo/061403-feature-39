@@ -26,6 +26,17 @@
         />
       </div>
 
+      <div class="phase-section">
+        <PhaseGoalsPanel
+          :currentPhase="getCurrentPhase"
+          :phaseGoals="getPhaseGoals"
+          :allPhases="allPhasesWithProgress"
+          :totalScore="totalScore"
+          :completedGoalsCount="completedGoalsCount"
+          :totalGoalsCount="totalGoalsCount"
+        />
+      </div>
+
       <div class="middle-section">
         <div class="left-panel">
           <Thermometer 
@@ -86,6 +97,11 @@
       :temperature="temperature"
       :wood="wood"
       :tools="tools"
+      :totalScore="totalScore"
+      :completedGoalsCount="completedGoalsCount"
+      :totalGoalsCount="totalGoalsCount"
+      :allPhases="allPhasesWithProgress"
+      :stats="stats"
       @restart="handleRestart"
       @load="showSaveManager"
     />
@@ -104,6 +120,7 @@ import ActionPanel from './components/ActionPanel.vue'
 import LogPanel from './components/LogPanel.vue'
 import SaveManager from './components/SaveManager.vue'
 import GameOver from './components/GameOver.vue'
+import PhaseGoalsPanel from './components/PhaseGoalsPanel.vue'
 
 const {
   temperature,
@@ -122,6 +139,13 @@ const {
   isDanger,
   canMakeFire,
   huntSuccessRate,
+  getCurrentPhase,
+  getPhaseGoals,
+  allPhasesWithProgress,
+  totalScore,
+  completedGoalsCount,
+  totalGoalsCount,
+  stats,
   chopWood,
   hunt,
   makeTools,
@@ -333,6 +357,12 @@ watch(isDanger, (newVal) => {
 .top-section {
   display: flex;
   justify-content: center;
+}
+
+.phase-section {
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .middle-section {
